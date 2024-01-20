@@ -1,6 +1,5 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit';
 import axios from 'axios';
-import {AppDispatch} from './';
 
 interface PricesState {
     data: Record<string, string>;
@@ -12,45 +11,41 @@ const initialState: PricesState = {
     loading: false,
 };
 
-export const pricesSlice = createSlice({
-    name: 'prices',
-    initialState,
-    reducers: {
-        fetchStart: state => {
-            state.loading = true;
-        },
-        fetchSuccess: (state, action: PayloadAction<Record<string, string>>) => {
-            state.data = action.payload;
-            state.loading = false;
-        },
-        fetchFailure: state => {
-            state.loading = false;
-        },
-    },
-});
-
-export const {fetchStart, fetchSuccess, fetchFailure} = pricesSlice.actions;
-
-export const fetchPrices = () => async (dispatch: AppDispatch) => {
-    dispatch(fetchStart());
-    try {
+export const fetchPrices = createAsyncThunk<Record<string, string>, void>(
+    'prices/fetchPrices',
+    async () => {
         const symbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT'];
         const responses = await Promise.all(
             symbols.map(symbol =>
                 axios.get(`https://www.binance.com/api/v3/ticker/price?symbol=${symbol}`)
             )
         );
-        const prices = responses.reduce((acc: Record<string, string>, response, index) => {
+        return responses.reduce((acc, response, index) => {
             const symbol = symbols[index].slice(0, -4);
-            acc[symbol] = Math.floor(response.data.price).toString(); // Преобразование числа в строку
+            acc[symbol] = Math.floor(response.data.price).toString();
             return acc;
         }, {} as Record<string, string>);
-        dispatch(fetchSuccess(prices));
-    } catch (error) {
-        console.error(`Ошибка при получении данных:`, error);
-        dispatch(fetchFailure());
     }
-};
+);
+
+const pricesSlice = createSlice({
+    name: 'prices',
+    initialState,
+    reducers: {},
+    extraReducers: (builder) => {
+        builder.addCase(fetchPrices.pending, (state) => {
+            state.loading = true;
+        });
+        builder.addCase(fetchPrices.fulfilled, (state, action: PayloadAction<Record<string, string>>) => {
+            state.data = action.payload;
+            state.loading = false;
+        });
+        builder.addCase(fetchPrices.rejected, (state) => {
+            state.loading = false;
+            console.log('Something went wrong.')
+        });
+    },
+});
 
 
 export default pricesSlice.reducer;
