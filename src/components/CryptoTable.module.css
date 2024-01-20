@@ -23,3 +23,7 @@
 .tableTbody > tr > td {
     color: white;
 }
+
+.tableTbody > p > span {
+    color: orange;
+}

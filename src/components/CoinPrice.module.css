@@ -1,0 +1,9 @@
+.coinPrice {
+    display: inline;
+    color: orange;
+}
+
+.refreshButton {
+    display: contents;
+    cursor: pointer;
+}
