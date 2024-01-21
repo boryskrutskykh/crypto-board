@@ -13,11 +13,18 @@ function App() {
     const [data, setData] = useState<CryptoData[]>([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const addCryptoData = (newData: Omit<CryptoData, 'key'>) => {
-        setData([...data, {...newData, key: Date.now()}]);
+    const calculateAveragePrice = (volume: number, amount: number): string => {
+        return volume && amount ? (volume / amount).toFixed(2) : '0';
     };
-    const showModal = () => {
-        setIsModalVisible(true);
+
+    const addCryptoData = (newData: Omit<CryptoData, 'key'>) => {
+        const updatedData = {
+            ...newData,
+            averagePrice: calculateAveragePrice(Number(newData.volume), Number(newData.amount)),
+            key: Date.now(),
+        };
+        setData([...data, updatedData]);
+        setIsModalVisible(false);
     };
 
     return (

@@ -21,8 +21,8 @@ const CryptoTable = ( { data }: CryptoTableProps ) => {
         },
         {
             title: 'Средняя цена покупки',
-            dataIndex: 'buyPrice',
-            key: 'buyPrice',
+            dataIndex: 'averagePrice',
+            key: 'averagePrice',
         },
         {
             title: 'Цена текущая',
