@@ -54,6 +54,7 @@ const CryptoTable = ( { data }: CryptoTableProps ) => {
     return (
         <div className={styles.tableContainer}>
             <h2>Список моих монет:</h2>
+            <br/>
             <Table
                 dataSource={data}
                 columns={columns}

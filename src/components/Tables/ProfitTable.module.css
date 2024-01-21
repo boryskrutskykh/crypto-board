@@ -1,0 +1,34 @@
+.table {
+    width: 100%;
+    margin-top: 20px;
+    color: white;
+    display: flex;
+    justify-content: center;
+}
+
+.row {
+    align-items: start;
+    padding: 10px;
+    text-align: center;
+}
+
+.cell {
+    margin-bottom: 10px;
+}
+
+.cell > b {
+    color: orange;
+}
+
+.cell > span {
+    font-weight: lighter;
+}
+
+.bgColor {
+    display: flex;
+    background: radial-gradient(ellipse, #1f3059, #0D1421);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.58);
+}
+
+

@@ -7,3 +7,15 @@
     display: contents;
     cursor: pointer;
 }
+
+.coinPriceWrapper {
+    text-align: center;
+    font-size: 25px;
+    color: white;
+}
+
+
+.coinPriceWrapper > span {
+    color: white;
+    font-weight: lighter;
+}

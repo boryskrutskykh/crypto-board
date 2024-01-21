@@ -5,6 +5,7 @@ import {ReloadOutlined} from '@ant-design/icons';
 import {useDispatch, useSelector} from 'react-redux';
 import {fetchPrices} from '../store/pricesSlice';
 import {AppDispatch, RootState} from '../store';
+import {motion} from 'framer-motion';
 
 
 const CoinPrice = () => {
@@ -18,18 +19,26 @@ const CoinPrice = () => {
 
 
     return (
-        <div className={styles.tableContainer}>
-            <h2>Топ монеты, цены. <b>BTC: </b>
-                <div className={coinPriceStyles.coinPrice}>{prices.BTC} $</div>
-                | <b>ETH: </b>
-                <div className={coinPriceStyles.coinPrice}>{prices.ETH} $</div>
-                | <b>BNB: </b>
-                <div className={coinPriceStyles.coinPrice}>{prices.BNB} $</div>
-                <div onClick={() => dispatch(fetchPrices())} className={coinPriceStyles.refreshButton}>
-                    <ReloadOutlined spin={loading} style={{fontSize: '24px', color: '#0dff00', marginLeft: '8px'}}/>
+
+        <motion.div
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            transition={{duration: 2}}
+        >
+            {<div className={styles.tableContainer}>
+                <div className={coinPriceStyles.coinPriceWrapper}>
+                    <span>BTC: </span>
+                    <div className={coinPriceStyles.coinPrice}><b>{prices.BTC}</b> $ </div>
+                    | <span>ETH: </span>
+                    <div className={coinPriceStyles.coinPrice}><b>{prices.ETH}</b> $ </div>
+                    | <span>BNB: </span>
+                    <div className={coinPriceStyles.coinPrice}><b>{prices.BNB}</b> $</div>
+                    <div onClick={() => dispatch(fetchPrices())} className={coinPriceStyles.refreshButton}>
+                        <ReloadOutlined spin={loading} style={{fontSize: '24px', color: '#0dff00', marginLeft: '8px'}}/>
+                    </div>
                 </div>
-            </h2>
-        </div>
+            </div>}
+        </motion.div>
     );
 };
 
