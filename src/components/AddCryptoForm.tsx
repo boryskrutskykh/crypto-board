@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Modal, Input, Form, Button} from 'antd';
 import {CryptoData} from "../types";
 
@@ -9,20 +9,19 @@ interface AddCryptoFormProps {
 }
 
 const AddCryptoForm = ({onAdd, isVisible, onCancel}: AddCryptoFormProps) => {
-    const [formData, setFormData] = useState({
-        coin: '',
-        volume: '',
-        amount: ''
-    });
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
-        setFormData(prevState => ({...prevState, [name]: value}));
+    const [form] = Form.useForm();
+
+    const validateNumberInput = async (_: any, value: string) => {
+        if (!value || /^\d+(\.\d+)?$/.test(value)) {
+            return;
+        }
+        throw new Error('Пожалуйста, введите целое число или число с плавающей запятой');
     };
 
-    const handleSubmit = () => {
-        onAdd(formData);
-        setFormData({coin: '', volume: '', amount: ''});
+    const handleSubmit = (values: any) => {
+        onAdd(values);
+        form.resetFields();
     };
 
     return (
@@ -30,36 +29,41 @@ const AddCryptoForm = ({onAdd, isVisible, onCancel}: AddCryptoFormProps) => {
             title="Добавить новую монету"
             open={isVisible}
             onCancel={onCancel}
-            footer={[
-                <Button key="back" onClick={onCancel}>
-                    Отмена
-                </Button>,
-                <Button key="submit" type="primary" onClick={handleSubmit}>
-                    Добавить
-                </Button>,
-            ]}
+            footer={null}
         >
-            <Form layout="vertical">
-                <Form.Item label="Монета">
-                    <Input
-                        name="coin"
-                        value={formData.coin}
-                        onChange={handleInputChange}
-                    />
+            <Form
+                form={form}
+                layout="vertical"
+                onFinish={handleSubmit}
+            >
+                <Form.Item
+                    name="coin"
+                    label="Монета"
+                    rules={[{required: true, message: 'Пожалуйста, введите название монеты'}]}
+                >
+                    <Input/>
                 </Form.Item>
-                <Form.Item label="Объем">
-                    <Input
-                        name="volume"
-                        value={formData.volume}
-                        onChange={handleInputChange}
-                    />
+                <Form.Item
+                    name="volume"
+                    label="Объем"
+                    rules={[{validator: validateNumberInput}]}
+                >
+                    <Input/>
                 </Form.Item>
-                <Form.Item label="Количество монет">
-                    <Input
-                        name="amount"
-                        value={formData.amount}
-                        onChange={handleInputChange}
-                    />
+                <Form.Item
+                    name="amount"
+                    label="Количество монет"
+                    rules={[{validator: validateNumberInput}]}
+                >
+                    <Input/>
+                </Form.Item>
+                <Form.Item>
+                    <Button key="back" onClick={onCancel}>
+                        Отмена
+                    </Button>
+                    <Button style={{marginLeft: "3%"}} key="submit" type="primary" htmlType="submit">
+                        Добавить
+                    </Button>
                 </Form.Item>
             </Form>
         </Modal>
