@@ -15,9 +15,10 @@ const CryptoTable = ( { data }: CryptoTableProps ) => {
             key: 'coin',
         },
         {
-            title: 'Объем',
+            title: 'Объем $',
             dataIndex: 'volume',
             key: 'volume',
+            render: (text: string) => `${text} $`
         },
         {
             title: 'Средняя цена покупки',

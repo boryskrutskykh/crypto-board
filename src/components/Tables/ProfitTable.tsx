@@ -2,7 +2,23 @@ import React from 'react';
 import styles from './ProfitTable.module.css'
 import {motion} from 'framer-motion';
 
-const ProfitTable = () => {
+interface ProfitTableProps {
+    cryptoData: Array<{
+        volume: string;
+    }>;
+}
+
+
+const ProfitTable: React.FC<ProfitTableProps> = ({cryptoData}) => {
+
+    const calculateTotalVolume = (data: ProfitTableProps['cryptoData']): string => {
+        const totalVolume = data.reduce((acc, item) => acc + Number(item.volume), 0);
+        return `${Math.round(totalVolume)} $`;
+
+    };
+
+    const starterPortfolioPrice = calculateTotalVolume(cryptoData);
+
 
     const data = {
         starterPortfolioPrice: '1000 $',
@@ -21,7 +37,7 @@ const ProfitTable = () => {
                 <div className={styles.bgColor}>
                     <div className={styles.row}>
                         <div className={styles.cell}><span>Цена портфеля начальная</span></div>
-                        <div className={styles.cell}><b>{data.starterPortfolioPrice}</b></div>
+                        <div className={styles.cell}><b>{starterPortfolioPrice}</b></div>
                     </div>
                     <div className={styles.row}>
                         <div className={styles.cell}><span>Цена портфеля</span></div>
