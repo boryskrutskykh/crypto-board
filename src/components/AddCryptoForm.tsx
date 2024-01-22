@@ -1,7 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Modal, Input, Form, Button} from 'antd';
 import {CryptoData} from "../types";
 import axios from 'axios';
+import {Radio} from 'antd';
+import stockExchange from "../router/stockExchange";
 
 interface AddCryptoFormProps {
     onAdd: (newData: Omit<CryptoData, 'key'>) => void;
@@ -10,8 +12,14 @@ interface AddCryptoFormProps {
 }
 
 const AddCryptoForm = ({onAdd, isVisible, onCancel}: AddCryptoFormProps) => {
-
     const [form] = Form.useForm();
+    const [selectedApi, setSelectedApi] = useState('binance');
+    const [manualCurrentPrice, setManualCurrentPrice] = useState(false);
+
+    const toggleManualCurrentPrice = () => {
+        setManualCurrentPrice(!manualCurrentPrice);
+        form.resetFields(['currentPrice', 'priceUrl']); // Сбросить значения полей, связанных с ценой
+    };
 
     const validateNumberInput = async (_: any, value: string) => {
         if (!value || /^\d+(\.\d+)?$/.test(value)) {
@@ -21,21 +29,40 @@ const AddCryptoForm = ({onAdd, isVisible, onCancel}: AddCryptoFormProps) => {
     };
 
     const fetchCurrentPrice = async (coinName: string) => {
+        let url;
+        switch (selectedApi) {
+            case 'binance':
+                url = stockExchange.BINANCE(coinName);
+                break;
+            case 'gate':
+                url = stockExchange.GATE(coinName);
+                break;
+            default:
+                url = stockExchange.BINANCE(coinName);
+        }
         try {
-            const response = await axios.get(`https://www.binance.com/api/v3/ticker/price?symbol=${coinName}USDT`);
-            return response.data.price;
+            const response = await axios.get(url);
+            console.log(response.data)
+            return response.data.price || response.data.last;
         } catch (error) {
             console.error("Ошибка при получении цены:", error);
             return null;
         }
     };
 
+
     const calculateAveragePrice = (volume: number, amount: number): string => {
         return volume && amount ? (volume / amount).toFixed(2) : '0';
     };
 
     const handleSubmit = async (values: any) => {
-        const currentPrice = await fetchCurrentPrice(values.priceUrl);
+        let currentPrice;
+
+        if (!manualCurrentPrice) {
+            currentPrice = await fetchCurrentPrice(values.priceUrl);
+        } else {
+            currentPrice = values.currentPrice;
+        }
 
         const totalCost = Number(values.amount) * (currentPrice || 0);
         const profit = totalCost - Number(values.volume);
@@ -89,13 +116,21 @@ const AddCryptoForm = ({onAdd, isVisible, onCancel}: AddCryptoFormProps) => {
                     <Input/>
                 </Form.Item>
                 <Form.Item
+                    name="currentPrice"
+                    label="Цена текущая"
+                    rules={[{required: manualCurrentPrice, message: 'Введите текущую цену'}]}
+                    hidden={!manualCurrentPrice}
+                >
+                    <Input disabled={!manualCurrentPrice}/>
+                </Form.Item>
+                <Form.Item
                     name="priceUrl"
                     label="Название монеты для получения цены"
-                    rules={[{required: true, message: 'Пожалуйста, введите название монеты.'}]}
+                    rules={[{required: !manualCurrentPrice, message: 'Пожалуйста, введите название монеты.'}]}
+                    hidden={manualCurrentPrice}
                 >
-                    <Input/>
+                    <Input disabled={manualCurrentPrice}/>
                 </Form.Item>
-
                 <Form.Item>
                     <Button key="back" onClick={onCancel}>
                         Отмена
@@ -103,6 +138,19 @@ const AddCryptoForm = ({onAdd, isVisible, onCancel}: AddCryptoFormProps) => {
                     <Button style={{marginLeft: "3%"}} key="submit" type="primary" htmlType="submit">
                         Добавить
                     </Button>
+                    <Button style={{marginLeft: "3%"}} onClick={toggleManualCurrentPrice}>
+                        {manualCurrentPrice ? "Автоматически" : "Вручную"}
+                    </Button>
+                </Form.Item>
+                <Form.Item label="Выберите API">
+                    <Radio.Group
+                        defaultValue="binance"
+                        buttonStyle="solid"
+                        onChange={(e) => setSelectedApi(e.target.value)}
+                    >
+                        <Radio.Button value="binance">Binance</Radio.Button>
+                        <Radio.Button value="gate">Gate</Radio.Button>
+                    </Radio.Group>
                 </Form.Item>
             </Form>
         </Modal>

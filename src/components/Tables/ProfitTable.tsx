@@ -10,41 +10,6 @@ interface ProfitTableProps {
 }
 
 const ProfitTable: React.FC<ProfitTableProps> = ({cryptoData}) => {
-
-    // const calculateTotalVolume = (data: ProfitTableProps['cryptoData']): string => {
-    //     const totalVolume = data.reduce((acc, item) => acc + Number(item.volume), 0);
-    //     return `${Math.round(totalVolume)} $`;
-    // };
-    //
-    // const calculateTotalPrice = (data: ProfitTableProps['cryptoData']): string => {
-    //     const totalPrice = data.reduce((acc, item) => acc + (Number(item.price) || 0), 0);
-    //     return `${Math.round(totalPrice)} $`;
-    // };
-    //
-    // const calculatePortfolioProfit = (): string => {
-    //     const totalVolume = cryptoData.reduce((acc, item) => acc + Number(item.volume), 0);
-    //     const totalPortfolioPrice = cryptoData.reduce((acc, item) => acc + (Number(item.price) || 0), 0);
-    //     const profit = totalPortfolioPrice - totalVolume;
-    //     return `${Math.round(profit)} $`;
-    // };
-    //
-    // const calculateTotalPercentage = (profit: number, starterPrice: number): string => {
-    //     if (starterPrice === 0) return '0 %';
-    //     const percentage = (profit * 100) / starterPrice;
-    //     return `${percentage.toFixed(2)} %`;
-    // };
-    //
-    // const starterPortfolioPrice = calculateTotalVolume(cryptoData);
-    // const portfolioPrice = calculateTotalPrice(cryptoData);
-    // const profitPortfolioPrice = calculatePortfolioProfit();
-    //
-    // const totalProfit = cryptoData.reduce((acc, item) => acc + (Number(item.price) || 0), 0) - cryptoData.reduce((acc, item) => acc + Number(item.volume), 0);
-    //
-    // const starterPortfolioPriceCalculations = cryptoData.reduce((acc, item) => acc + Number(item.volume), 0);
-    //
-    //
-    // const totalPercentage = calculateTotalPercentage(totalProfit, starterPortfolioPriceCalculations);
-
     const calculateTotal = (data: ProfitTableProps['cryptoData'], key: 'volume' | 'price') => {
         return data.reduce((acc, item) => acc + Number(item[key] || 0), 0);
     };
@@ -81,7 +46,7 @@ const ProfitTable: React.FC<ProfitTableProps> = ({cryptoData}) => {
                         <div className={styles.cell}><span>Общий % по портфелю</span></div>
                         <div className={styles.cell}><b
                             style={{color: parseFloat(totalPercentage) < 0 ? 'red' : '#0dff00'}}>
-                            {totalPercentage} $
+                            {totalPercentage}
                         </b></div>
                     </div>
                 </div>
