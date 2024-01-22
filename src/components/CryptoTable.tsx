@@ -7,7 +7,7 @@ interface CryptoTableProps {
     data: CryptoData[];
 }
 
-const CryptoTable = ( { data }: CryptoTableProps ) => {
+const CryptoTable = ({data}: CryptoTableProps) => {
     const columns = [
         {
             title: 'Монета',
@@ -44,11 +44,19 @@ const CryptoTable = ( { data }: CryptoTableProps ) => {
             title: 'Прибыль',
             dataIndex: 'profit',
             key: 'profit',
+            render: (text: string) => {
+                const profit = parseFloat(text);
+                return <span style={{ color: profit < 0 ? 'red' : 'green' }}><b>{text}</b></span>;
+            }
         },
         {
             title: 'Процент',
             dataIndex: 'percentage',
             key: 'percentage',
+            render: (text: string) => {
+                const percentage = parseFloat(text);
+                return <span style={{ color: percentage < 0 ? 'red' : 'green' }}><b>{text}</b></span>;
+            }
         },
     ];
 
