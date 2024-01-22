@@ -15,10 +15,11 @@ const AddCryptoForm = ({onAdd, isVisible, onCancel}: AddCryptoFormProps) => {
     const [form] = Form.useForm();
     const [selectedApi, setSelectedApi] = useState('binance');
     const [manualCurrentPrice, setManualCurrentPrice] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const toggleManualCurrentPrice = () => {
         setManualCurrentPrice(!manualCurrentPrice);
-        form.resetFields(['currentPrice', 'priceUrl']); // Сбросить значения полей, связанных с ценой
+        form.resetFields(['currentPrice', 'priceUrl']);
     };
 
     const validateNumberInput = async (_: any, value: string) => {
@@ -56,10 +57,18 @@ const AddCryptoForm = ({onAdd, isVisible, onCancel}: AddCryptoFormProps) => {
     };
 
     const handleSubmit = async (values: any) => {
+        setIsLoading(true);
+
         let currentPrice;
 
         if (!manualCurrentPrice) {
-            currentPrice = await fetchCurrentPrice(values.priceUrl);
+            try {
+                currentPrice = await fetchCurrentPrice(values.priceUrl);
+            } catch (error) {
+                console.error("Ошибка при получении цены:", error);
+                setIsLoading(false);
+                return;
+            }
         } else {
             currentPrice = values.currentPrice;
         }
@@ -80,6 +89,7 @@ const AddCryptoForm = ({onAdd, isVisible, onCancel}: AddCryptoFormProps) => {
 
         onAdd(newData);
         form.resetFields();
+        setIsLoading(false);
     };
 
     return (
@@ -135,7 +145,8 @@ const AddCryptoForm = ({onAdd, isVisible, onCancel}: AddCryptoFormProps) => {
                     <Button key="back" onClick={onCancel}>
                         Отмена
                     </Button>
-                    <Button style={{marginLeft: "3%"}} key="submit" type="primary" htmlType="submit">
+                    <Button style={{marginLeft: "3%"}} key="submit" type="primary" htmlType="submit"
+                            loading={isLoading}>
                         Добавить
                     </Button>
                     <Button style={{marginLeft: "3%"}} onClick={toggleManualCurrentPrice}>
