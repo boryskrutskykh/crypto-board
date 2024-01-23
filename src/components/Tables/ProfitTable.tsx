@@ -30,7 +30,7 @@ const ProfitTable: React.FC<ProfitTableProps> = ({cryptoData}) => {
                 <div className={styles.bgColor}>
                     <div className={styles.row}>
                         <div className={styles.cell}><span>Цена портфеля начальная</span></div>
-                        <div className={styles.cell}><b>{totalVolume} $</b></div>
+                        <div className={styles.cell}><b>{totalVolume.toFixed(2)} $</b></div>
                     </div>
                     <div className={styles.row}>
                         <div className={styles.cell}><span>Цена портфеля</span></div>
