@@ -8,6 +8,7 @@ import AddButton from './components/AddButton';
 import CoinPrice from "./components/CoinPrice";
 import ProfitTable from "./components/Tables/ProfitTable";
 import Footer from "./components/Footer/Footer";
+import {Modal} from "antd";
 
 function App() {
     const [data, setData] = useState<CryptoData[]>([]);
@@ -22,12 +23,16 @@ function App() {
         setIsModalVisible(false);
     };
 
+    const onDelete = (key: number) => {
+        setData(data.filter(item => item.key !== key));
+    };
+
     return (
         <div className="App">
             <h1 className="main-title">CRYPTO BOARD</h1>
             <CoinPrice/>
             <ProfitTable cryptoData={data}/>
-            <CryptoTable data={data}/>
+            <CryptoTable data={data} onDelete={onDelete}/>
             <AddButton showModal={() => setIsModalVisible(true)}/>
             <AddCryptoForm
                 onAdd={addCryptoData}

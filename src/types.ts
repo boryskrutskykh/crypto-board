@@ -8,4 +8,5 @@ export interface CryptoData {
     price?: string;
     profit?: string;
     percentage?: string;
+    onDelete: (key: number) => void;
 }

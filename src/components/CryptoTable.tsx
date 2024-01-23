@@ -1,13 +1,16 @@
 import React from 'react';
-import {Table} from 'antd';
+import {Modal, Table} from 'antd';
 import styles from './CryptoTable.module.css';
 import {CryptoData} from "../types";
+import DeleteButton from "./Button/DeleteButton";
 
 interface CryptoTableProps {
     data: CryptoData[];
+    onDelete: (key: number) => void;
 }
 
-const CryptoTable = ({data}: CryptoTableProps) => {
+
+const CryptoTable: React.FC<CryptoTableProps> = ({data, onDelete}) => {
 
     const columns = [
         {
@@ -75,6 +78,12 @@ const CryptoTable = ({data}: CryptoTableProps) => {
                 const percentage = parseFloat(text);
                 return <span style={{color: percentage < 0 ? 'red' : 'green'}}><b>{text}</b></span>;
             }
+        },
+        {
+            key: 'action',
+            render: (_: any, record: CryptoData) => (
+                <DeleteButton onConfirmDelete={() => onDelete(record.key ?? 0)} />
+            ),
         },
     ];
 
