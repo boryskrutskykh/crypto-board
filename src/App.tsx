@@ -23,8 +23,17 @@ function App() {
         setIsModalVisible(false);
     };
 
+    const onDeleteConfirm = (key: number) => {
+        Modal.confirm({
+            title: 'Вы уверены, что хотите удалить эту монету?',
+            onOk() {
+                onDelete(key);
+            },
+        });
+    };
+
     const onDelete = (key: number) => {
-        setData(data.filter(item => item.key !== key));
+        setData(currentData => currentData.filter(item => item.key !== key));
     };
 
     return (
@@ -32,7 +41,7 @@ function App() {
             <h1 className="main-title">CRYPTO BOARD</h1>
             <CoinPrice/>
             <ProfitTable cryptoData={data}/>
-            <CryptoTable data={data} onDelete={onDelete}/>
+            <CryptoTable data={data} onDeleteConfirm={onDeleteConfirm}/>
             <AddButton showModal={() => setIsModalVisible(true)}/>
             <AddCryptoForm
                 onAdd={addCryptoData}

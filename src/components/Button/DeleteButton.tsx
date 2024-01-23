@@ -1,23 +1,17 @@
-import React from 'react';
-import {Button, Modal} from 'antd';
+import React from "react";
+import {Button} from "antd";
 import {DeleteOutlined} from '@ant-design/icons';
 
 interface DeleteButtonProps {
-    onConfirmDelete: () => void;
+    keyToDelete: number;
+    onDeleteConfirm: (key: number) => void;
 }
 
-const DeleteButton: React.FC<DeleteButtonProps> = ({onConfirmDelete}) => {
-    const handleDelete = () => {
-        Modal.confirm({
-            title: 'Вы уверены, что хотите удалить эту монету?',
-            onOk: onConfirmDelete,
-        });
-    };
-
+const DeleteButton: React.FC<DeleteButtonProps> = ({keyToDelete, onDeleteConfirm}) => {
     return (
         <Button
             icon={<DeleteOutlined/>}
-            onClick={handleDelete}
+            onClick={() => onDeleteConfirm(keyToDelete)}
             type="primary"
             danger
         />

@@ -6,12 +6,10 @@ import DeleteButton from "./Button/DeleteButton";
 
 interface CryptoTableProps {
     data: CryptoData[];
-    onDelete: (key: number) => void;
+    onDeleteConfirm: (key: number) => void;
 }
 
-
-const CryptoTable: React.FC<CryptoTableProps> = ({data, onDelete}) => {
-
+const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm}) => {
     const columns = [
         {
             title: 'Монета',
@@ -82,7 +80,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({data, onDelete}) => {
         {
             key: 'action',
             render: (_: any, record: CryptoData) => (
-                <DeleteButton onConfirmDelete={() => onDelete(record.key ?? 0)} />
+                <DeleteButton keyToDelete={record.key ?? 0} onDeleteConfirm={onDeleteConfirm}/>
             ),
         },
     ];
