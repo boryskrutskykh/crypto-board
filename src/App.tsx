@@ -4,7 +4,7 @@ import './styles/global.css';
 import CryptoTable from './components/CryptoTable';
 import AddCryptoForm from './components/AddCryptoForm';
 import {CryptoData} from "./types";
-import AddButton from './components/AddButton';
+import AddButton from './components/Button/AddButton';
 import CoinPrice from "./components/CoinPrice";
 import ProfitTable from "./components/Tables/ProfitTable";
 import Footer from "./components/Footer/Footer";
