@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import {Modal, Input, Form, Button} from 'antd';
-import {CryptoData} from "../types";
+import {CryptoData} from "../../types";
 import axios from 'axios';
 import {Radio} from 'antd';
-import stockExchange from "../router/stockExchange";
+import stockExchange from "../../router/stockExchange";
+import styles from "./AddCryptoForm.module.css"
 
 interface AddCryptoFormProps {
     onAdd: (newData: Omit<CryptoData, 'key'>) => void;
@@ -142,26 +143,31 @@ const AddCryptoForm = ({onAdd, isVisible, onCancel}: AddCryptoFormProps) => {
                     <Input disabled={manualCurrentPrice}/>
                 </Form.Item>
                 <Form.Item>
-                    <Button key="back" onClick={onCancel}>
-                        Отмена
+                    <Button onClick={toggleManualCurrentPrice}>
+                        {manualCurrentPrice ? "Авто" : "Вручную"}
                     </Button>
-                    <Button style={{marginLeft: "3%"}} key="submit" type="primary" htmlType="submit"
-                            loading={isLoading}>
-                        Добавить
-                    </Button>
-                    <Button style={{marginLeft: "3%"}} onClick={toggleManualCurrentPrice}>
-                        {manualCurrentPrice ? "Автоматически" : "Вручную"}
-                    </Button>
+                    {!manualCurrentPrice && (
+                        <Radio.Group
+                            style={{marginLeft: "4%"}}
+                            defaultValue="binance"
+                            buttonStyle="solid"
+                            onChange={(e) => setSelectedApi(e.target.value)}
+                        >
+                            <Radio.Button value="binance">Binance</Radio.Button>
+                            <Radio.Button value="gate">Gate</Radio.Button>
+                        </Radio.Group>
+                    )}
                 </Form.Item>
-                <Form.Item label="Выберите API">
-                    <Radio.Group
-                        defaultValue="binance"
-                        buttonStyle="solid"
-                        onChange={(e) => setSelectedApi(e.target.value)}
-                    >
-                        <Radio.Button value="binance">Binance</Radio.Button>
-                        <Radio.Button value="gate">Gate</Radio.Button>
-                    </Radio.Group>
+                <Form.Item>
+                    <div className={styles.createButtons}>
+                        <Button key="back" onClick={onCancel}>
+                            Отмена
+                        </Button>
+                        <Button style={{marginLeft: "3%"}} key="submit" type="primary" htmlType="submit"
+                                loading={isLoading}>
+                            Добавить
+                        </Button>
+                    </div>
                 </Form.Item>
             </Form>
         </Modal>

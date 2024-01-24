@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import 'antd/dist/reset.css';
 import './styles/global.css';
 import CryptoTable from './components/CryptoTable';
-import AddCryptoForm from './components/AddCryptoForm';
+import AddCryptoForm from './components/Form/AddCryptoForm';
 import {CryptoData} from "./types";
 import AddButton from './components/Button/AddButton';
 import CoinPrice from "./components/CoinPrice";
