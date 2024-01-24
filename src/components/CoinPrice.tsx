@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import styles from './CryptoTable.module.css';
+import styles from "../components/Tables/CryptoTable.module.css";
 import coinPriceStyles from './CoinPrice.module.css';
 import {ReloadOutlined} from '@ant-design/icons';
 import {useDispatch, useSelector} from 'react-redux';
