@@ -5,7 +5,7 @@ import {CryptoData} from "../../types";
 import DeleteButton from "../Button/DeleteButton";
 import EditableCell from '../../components/Tables/EditableCell';
 import {EditOutlined, CheckOutlined, CloseOutlined} from '@ant-design/icons';
-import {fetchCurrentPrice} from "../../utils/fetchPrice";
+import {fetchCurrentPrice} from "../../api/fetchPrice";
 
 interface CryptoTableProps {
     data: CryptoData[];
@@ -24,49 +24,33 @@ const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm, onSave}
         setEditingKey(record.key ?? null);
     };
 
-    // const fetchCurrentPrice = async (coinName: string) => {
-    //     try {
-    //         const response = await axios.get(stockExchange.BINANCE(coinName));
-    //         return response.data.price || response.data.last;
-    //     } catch (error) {
-    //         console.error("Ошибка на Binance API:", error);
-    //         try {
-    //             const response = await axios.get(stockExchange.GATE(coinName));
-    //             return response.data.price || response.data.last;
-    //         } catch (error) {
-    //             console.error("Ошибка на Gate.io API:", error);
-    //             return null;
-    //         }
-    //     }
-    // };
+    const updatePrice = async (item: CryptoData, row: CryptoData) => {
+        if (isNaN(Number(row.currentPrice))) {
+            const fetchedPrice = await fetchCurrentPrice(row.currentPrice ?? '');
+            if (!fetchedPrice) {
+                form.setFields([{name: 'currentPrice', errors: ['Монета не найдена на бирже']}]);
+                throw new Error('Цена не найдена');
+            }
+            return fetchedPrice.toString();
+        }
+        return Number(row.currentPrice).toString();
+    };
 
     const save = async (key: React.Key) => {
         try {
-            const row = (await form.validateFields()) as CryptoData;
+            const row = await form.validateFields();
+            const index = data.findIndex((item) => item.key === key);
+            if (index === -1) return;
+
+            const updatedItem = { ...data[index], ...row };
+            updatedItem.currentPrice = await updatePrice(data[index], row);
+
             const newData = [...data];
-            const index = newData.findIndex((item) => key === item.key);
-
-            if (index > -1) {
-                const item = newData[index];
-                if (isNaN(Number(row.currentPrice))) {
-                    const fetchedPrice = await fetchCurrentPrice(row.currentPrice ?? '');
-                    if (fetchedPrice) {
-                        item.currentPrice = fetchedPrice.toString();
-                        row.currentPrice = fetchedPrice.toString();
-                    } else {
-                        form.setFields([{name: 'currentPrice', errors: ['Монета не найдена на бирже']}]);
-                        return;
-                    }
-                } else {
-                    item.currentPrice = Number(row.currentPrice).toString();
-                }
-
-                newData[index] = {...item, ...row};
-                onSave(newData[index]);
-                setEditingKey(null);
-            }
+            newData[index] = updatedItem;
+            onSave(newData[index]);
+            setEditingKey(null);
         } catch (errInfo) {
-            console.log('Ошибка валидации:', errInfo);
+            console.error('Ошибка валидации:', errInfo);
         }
     };
 

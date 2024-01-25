@@ -5,7 +5,7 @@ import CryptoTable from './components/Tables/CryptoTable';
 import AddCryptoForm from './components/Form/AddCryptoForm';
 import {CryptoData} from "./types";
 import AddButton from './components/Button/AddButton';
-import CoinPrice from "./components/CoinPrice";
+import CoinPrice from "./components/General/CoinPrice";
 import ProfitTable from "./components/Tables/ProfitTable";
 import Footer from "./components/Footer/Footer";
 import {Modal} from "antd";
