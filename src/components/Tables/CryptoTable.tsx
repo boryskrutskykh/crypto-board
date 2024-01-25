@@ -4,6 +4,7 @@ import styles from './CryptoTable.module.css';
 import {CryptoData} from "../../types";
 import DeleteButton from "../Button/DeleteButton";
 import EditableCell from '../../components/Tables/EditableCell';
+import {EditOutlined, CheckOutlined, CloseOutlined} from '@ant-design/icons';
 
 interface CryptoTableProps {
     data: CryptoData[];
@@ -64,7 +65,6 @@ const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm, onSave}
             title: 'Цена текущая',
             dataIndex: 'currentPrice',
             key: 'currentPrice',
-            editable: true,
         },
         {
             title: 'Количество',
@@ -118,7 +118,6 @@ const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm, onSave}
             ),
         },
         {
-            title: 'Действие',
             key: 'action',
             render: (_: any, record: CryptoData) => {
                 const editable = isEditing(record);
@@ -126,22 +125,26 @@ const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm, onSave}
                     <span>
         <button
             onClick={() => record.key !== undefined && save(record.key)}
-            style={{marginRight: 8}}
+            style={{marginRight: 8, background: "#0dff00"}}
+            className={styles.buttonStyle}
         >
-            Save
+            <CheckOutlined/>
         </button>
         <button
             onClick={() => setEditingKey(null)}
+            style={{background: "#ff4d4f"}}
+            className={styles.buttonStyle}
         >
-            Cancel
+            <CloseOutlined/>
         </button>
     </span>
                 ) : (
                     <button
                         disabled={editingKey !== null}
                         onClick={() => edit(record)}
+                        className={styles.buttonStyle}
                     >
-                        Edit
+                        <EditOutlined />
                     </button>
                 );
             },
