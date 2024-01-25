@@ -64,6 +64,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm, onSave}
             title: 'Цена текущая',
             dataIndex: 'currentPrice',
             key: 'currentPrice',
+            editable: true,
         },
         {
             title: 'Количество',

@@ -129,7 +129,16 @@ const AddCryptoForm = ({onAdd, isVisible, onCancel}: AddCryptoFormProps) => {
                 <Form.Item
                     name="currentPrice"
                     label="Цена текущая"
-                    rules={[{required: manualCurrentPrice, message: 'Введите текущую цену'}]}
+                    rules={[
+                        {
+                            required: manualCurrentPrice,
+                            message: 'Введите текущую цену'
+                        },
+                        {
+                            pattern: new RegExp(/^\d+(\.\d+)?$/),
+                            message: 'Введите валидное число (разрешены десятичные числа)',
+                        }
+                    ]}
                     hidden={!manualCurrentPrice}
                 >
                     <Input disabled={!manualCurrentPrice}/>

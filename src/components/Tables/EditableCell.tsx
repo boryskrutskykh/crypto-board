@@ -6,7 +6,6 @@ interface EditableCellProps {
     editing: boolean;
     dataIndex: keyof CryptoData;
     title: string;
-    inputType: 'number' | 'text';
     record: CryptoData;
     index: number;
     children: React.ReactNode;
@@ -16,7 +15,6 @@ const EditableCell: React.FC<EditableCellProps> = ({
                                                        editing,
                                                        dataIndex,
                                                        title,
-                                                       inputType,
                                                        record,
                                                        index,
                                                        children,
@@ -33,9 +31,13 @@ const EditableCell: React.FC<EditableCellProps> = ({
                             required: true,
                             message: `Введите ${title}!`,
                         },
+                        {
+                            pattern: new RegExp(/^\d+(\.\d+)?$/),
+                            message: 'Допускаются десятичные числа)',
+                        }
                     ]}
                 >
-                    <Input type={inputType}/>
+                    <Input/>
                 </Form.Item>
             ) : (
                 children
