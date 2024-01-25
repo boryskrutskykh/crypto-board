@@ -31,10 +31,10 @@ const EditableCell: React.FC<EditableCellProps> = ({
                             required: true,
                             message: `Введите ${title}!`,
                         },
-                        {
-                            pattern: new RegExp(/^\d+(\.\d+)?$/),
-                            message: 'Допускаются десятичные числа)',
-                        }
+                        // {
+                        //     pattern: new RegExp(/^\d+(\.\d+)?$/),
+                        //     message: 'Допускаются десятичные числа)',
+                        // }
                     ]}
                 >
                     <Input/>

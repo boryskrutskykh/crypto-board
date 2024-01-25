@@ -5,6 +5,7 @@ import {CryptoData} from "../../types";
 import DeleteButton from "../Button/DeleteButton";
 import EditableCell from '../../components/Tables/EditableCell';
 import {EditOutlined, CheckOutlined, CloseOutlined} from '@ant-design/icons';
+import {fetchCurrentPrice} from "../../utils/fetchPrice";
 
 interface CryptoTableProps {
     data: CryptoData[];
@@ -23,6 +24,21 @@ const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm, onSave}
         setEditingKey(record.key ?? null);
     };
 
+    // const fetchCurrentPrice = async (coinName: string) => {
+    //     try {
+    //         const response = await axios.get(stockExchange.BINANCE(coinName));
+    //         return response.data.price || response.data.last;
+    //     } catch (error) {
+    //         console.error("Ошибка на Binance API:", error);
+    //         try {
+    //             const response = await axios.get(stockExchange.GATE(coinName));
+    //             return response.data.price || response.data.last;
+    //         } catch (error) {
+    //             console.error("Ошибка на Gate.io API:", error);
+    //             return null;
+    //         }
+    //     }
+    // };
 
     const save = async (key: React.Key) => {
         try {
@@ -32,12 +48,25 @@ const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm, onSave}
 
             if (index > -1) {
                 const item = newData[index];
+                if (isNaN(Number(row.currentPrice))) {
+                    const fetchedPrice = await fetchCurrentPrice(row.currentPrice ?? '');
+                    if (fetchedPrice) {
+                        item.currentPrice = fetchedPrice.toString();
+                        row.currentPrice = fetchedPrice.toString();
+                    } else {
+                        form.setFields([{name: 'currentPrice', errors: ['Монета не найдена на бирже']}]);
+                        return;
+                    }
+                } else {
+                    item.currentPrice = Number(row.currentPrice).toString();
+                }
+
                 newData[index] = {...item, ...row};
                 onSave(newData[index]);
                 setEditingKey(null);
             }
         } catch (errInfo) {
-            console.log('Validate Failed:', errInfo);
+            console.log('Ошибка валидации:', errInfo);
         }
     };
 
@@ -65,6 +94,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm, onSave}
             title: 'Цена текущая',
             dataIndex: 'currentPrice',
             key: 'currentPrice',
+            editable: true
         },
         {
             title: 'Количество',
@@ -144,7 +174,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm, onSave}
                         onClick={() => edit(record)}
                         className={styles.buttonStyle}
                     >
-                        <EditOutlined />
+                        <EditOutlined/>
                     </button>
                 );
             },
