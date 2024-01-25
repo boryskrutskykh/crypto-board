@@ -8,7 +8,7 @@ import EditableCell from '../../components/Tables/EditableCell';
 interface CryptoTableProps {
     data: CryptoData[];
     onDeleteConfirm: (key: number) => void;
-    onSave: (updatedRecord: CryptoData) => void; // Добавьте это свойство
+    onSave: (updatedRecord: CryptoData) => void;
 }
 
 const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm, onSave}) => {
@@ -31,9 +31,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm, onSave}
 
             if (index > -1) {
                 const item = newData[index];
-                // Обновляем строку с новыми данными
-                newData[index] = { ...item, ...row };
-                // Вызываем onSave для обновления и пересчёта всей таблицы
+                newData[index] = {...item, ...row};
                 onSave(newData[index]);
                 setEditingKey(null);
             }
@@ -41,7 +39,6 @@ const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm, onSave}
             console.log('Validate Failed:', errInfo);
         }
     };
-
 
 
     const columns = [
