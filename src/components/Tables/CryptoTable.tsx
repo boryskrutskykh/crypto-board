@@ -136,7 +136,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm, onSave}
             render: (_: any, record: CryptoData) => {
                 const editable = isEditing(record);
                 return editable ? (
-                    <span>
+                    <span style={{display: "flex"}}>
         <button
             onClick={() => record.key !== undefined && save(record.key)}
             style={{marginRight: 8, background: "#0dff00"}}

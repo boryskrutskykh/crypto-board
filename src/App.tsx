@@ -68,7 +68,7 @@ function App() {
 
     return (
         <div className="App">
-            <h1 className="main-title">CRYPTO BOARD</h1>
+            <h1 className="main-title">CRYPTOBOARD</h1>
             <CoinPrice/>
             <ProfitTable cryptoData={data}/>
             <CryptoTable data={data} onDeleteConfirm={onDeleteConfirm} onSave={saveChanges}
