@@ -122,7 +122,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({data, onDeleteConfirm, onSave}
             },
             render: (text: string) => {
                 const percentage = parseFloat(text);
-                return <span style={{color: percentage < 0 ? 'red' : 'green'}}><b>{text}</b></span>;
+                return <span style={{color: percentage < 0 ? 'red' : 'green'}}><b>{Number(text).toFixed(2)} %</b></span>;
             }
         },
         {
