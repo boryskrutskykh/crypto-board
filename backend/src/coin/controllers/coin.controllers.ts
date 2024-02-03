@@ -31,6 +31,7 @@ export class CoinController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Возвращает список всех монет' })
   @ApiOkResponse({ description: 'Возвращает список всех монет', type: [Coin] })
   async findAll(): Promise<Coin[]> {
     return this.coinService.findAll();

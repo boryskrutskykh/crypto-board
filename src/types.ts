@@ -1,4 +1,5 @@
 export interface CryptoData {
+    id?: number,
     key?: number;
     coin: string;
     volume: string;
