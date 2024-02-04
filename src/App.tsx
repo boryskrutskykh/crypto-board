@@ -23,6 +23,7 @@ function App() {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/coins`, {
           headers: {
             'Authorization': `Basic ${basicAuth}`,
+            'Content-type': 'application/json',
           }
         });
         setData(response.data);
