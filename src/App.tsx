@@ -10,6 +10,7 @@ import ProfitTable from "./components/Tables/ProfitTable";
 import Footer from "./components/Footer/Footer";
 import { Modal } from "antd";
 import axios from "axios";
+import { basicAuth } from "./api/auth";
 
 function App() {
   const [data, setData] = useState<CryptoData[]>([]);
@@ -19,7 +20,11 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/coins`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/coins`, {
+          headers: {
+            'Authorization': `Basic ${basicAuth}`,
+          }
+        });
         setData(response.data);
       } catch (error) {
         console.error("Ошибка при получении данных:", error);
