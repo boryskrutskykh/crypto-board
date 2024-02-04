@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Table, Form } from "antd";
+import { Table, Form, Button } from "antd";
 import styles from "./CryptoTable.module.css";
 import { CryptoData } from "../../types";
 import DeleteButton from "../Button/DeleteButton";
 import EditableCell from "../../components/Tables/EditableCell";
 import { EditOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { fetchCurrentPrice } from "../../api/fetchPrice";
+import axios from "axios";
 
 interface CryptoTableProps {
   data: CryptoData[];
@@ -16,6 +17,34 @@ interface CryptoTableProps {
 const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave }) => {
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState<number | null>(null);
+  const [dataSource, setDataSource] = useState(data);
+
+  useEffect(() => {
+    setDataSource(data);
+  }, [data]);
+
+  const fetchPriceForCoin = async (coinSymbol: string) => {
+    try {
+      const response = await axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${coinSymbol}USDT`);
+      return response.data.price;
+    } catch (error) {
+      console.error(`Ошибка при получении цены для ${coinSymbol}:`, error);
+      return null;
+    }
+  };
+
+  const updateAllPrices = async () => {
+    const updates = await Promise.all(
+      dataSource.map(async (item) => {
+        const price = await fetchPriceForCoin(item.coin);
+        return { ...item, currentPrice: price ? parseFloat(price).toFixed(2) : "Ошибка" };
+      })
+    );
+
+    console.log(updates)
+    setDataSource(updates);
+
+  };
 
   const isEditing = (record: CryptoData) => record.key === editingKey;
 
@@ -78,7 +107,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
       title: "Цена текущая",
       dataIndex: "currentPrice",
       key: "currentPrice",
-      editable: true
+      editable: true,
     },
     {
       title: "Количество",
@@ -188,6 +217,9 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
 
       <h2>Список моих монет:</h2>
       <br />
+      <Button onClick={updateAllPrices} style={{ marginBottom: 16 }}>
+        Обновить цены
+      </Button>
       <Form form={form} component={false}>
         <Table
           components={{
@@ -196,10 +228,11 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
             }
           }}
           bordered
-          dataSource={data.map((record) => ({
-            ...record,
-            key: record.id
-          }))}
+          // dataSource={data.map((record) => ({
+          //   ...record,
+          //   key: record.id
+          // }))}
+          dataSource={dataSource.map((record) => ({...record, key: record.id}))}
           columns={mergedColumns}
           rowClassName="editable-row"
           pagination={false}

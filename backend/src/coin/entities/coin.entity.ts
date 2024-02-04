@@ -14,8 +14,8 @@ export class Coin {
   @Column('float', { nullable: true })
   averagePrice?: number;
 
-  @Column('float', { nullable: true })
-  currentPrice?: number;
+  // @Column('float', { nullable: true })
+  // currentPrice?: number;
 
   @Column('float')
   amount: number;
