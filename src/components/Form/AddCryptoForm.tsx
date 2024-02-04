@@ -5,7 +5,6 @@ import axios from "axios";
 import { Radio } from "antd";
 import stockExchange from "../../router/stockExchange";
 import styles from "./AddCryptoForm.module.css";
-import { basicAuth } from "../../api/auth";
 
 interface AddCryptoFormProps {
   onAdd: (newData: Omit<CryptoData, "key">) => void;
@@ -90,11 +89,7 @@ const AddCryptoForm = ({ onAdd, isVisible, onCancel }: AddCryptoFormProps) => {
     };
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/coins`, newData, {
-        headers: {
-          'Authorization': `Basic ${basicAuth}`,
-        }
-      });
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/coins`, newData);
       onAdd(response.data);
     } catch (error) {
       console.error(`Ошибка при добавлении монеты: ${error}`);
