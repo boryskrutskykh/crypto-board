@@ -20,8 +20,33 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
   const [dataSource, setDataSource] = useState(data);
 
   useEffect(() => {
-    setDataSource(data);
-  }, [data]);
+    const fetchInitialDataAndUpdatePrices = async () => {
+      try {
+        // Загрузка начальных данных
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/coins`);
+        const initialData = response.data;
+
+        // Обновление цен для каждой монеты
+        const updates = await Promise.all(initialData.map(async (item: any) => {
+          try {
+            const priceResponse = await axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${item.coin}USDT`);
+            const price = priceResponse.data.price;
+            return { ...item, currentPrice: price ? parseFloat(price).toFixed(2) : "Ошибка" };
+          } catch (error) {
+            console.error(`Ошибка при получении цены для ${item.coin}:`, error);
+            return { ...item, currentPrice: "Ошибка" }; // Возвращаем элемент с ошибкой цены, если запрос не удался
+          }
+        }));
+
+        // Обновляем dataSource с новыми данными, включая обновленные цены
+        setDataSource(updates);
+      } catch (error) {
+        console.error("Ошибка при получении начальных данных:", error);
+      }
+    };
+
+    fetchInitialDataAndUpdatePrices();
+  }, []);
 
   const fetchPriceForCoin = async (coinSymbol: string) => {
     try {

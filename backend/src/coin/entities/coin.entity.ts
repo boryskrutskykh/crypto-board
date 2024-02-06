@@ -11,8 +11,8 @@ export class Coin {
   @Column('float')
   volume: number;
 
-  @Column('float', { nullable: true })
-  averagePrice?: number;
+  // @Column('float', { nullable: true })
+  // averagePrice?: number;
 
   // @Column('float', { nullable: true })
   // currentPrice?: number;
@@ -20,12 +20,12 @@ export class Coin {
   @Column('float')
   amount: number;
 
-  @Column('float', { nullable: true })
-  price?: number;
+  // @Column('float', { nullable: true })
+  // price?: number;
 
-  @Column('float', { nullable: true })
-  profit?: number;
+  // @Column('float', { nullable: true })
+  // profit?: number;
 
-  @Column('float', { nullable: true })
-  percentage?: number;
+  // @Column('float', { nullable: true })
+  // percentage?: number;
 }
