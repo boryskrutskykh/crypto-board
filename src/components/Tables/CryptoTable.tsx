@@ -7,6 +7,12 @@ import EditableCell from "../../components/Tables/EditableCell";
 import { EditOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { fetchCurrentPrice } from "../../api/fetchPrice";
 import axios from "axios";
+import {
+  calculateAveragePrice,
+  calculateTotalCost,
+  calculateProfit,
+  calculatePercentage
+} from "../../utils/calculation";
 
 interface CryptoTableProps {
   data: CryptoData[];
@@ -17,36 +23,70 @@ interface CryptoTableProps {
 const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave }) => {
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState<number | null>(null);
-  const [dataSource, setDataSource] = useState(data);
+  const [dataSource, setDataSource] = useState<CryptoData[]>(data);
 
   useEffect(() => {
-    const fetchInitialDataAndUpdatePrices = async () => {
-      try {
-        // Загрузка начальных данных
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/coins`);
-        const initialData = response.data;
+    const updatePrices = async () => {
+      const updatedData = await Promise.all(data.map(async (item) => {
+        try {
+          const response = await axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${item.coin}USDT`);
+          const price = parseFloat(response.data.price).toFixed(2);
+          const totalCost = calculateTotalCost(Number(item.amount), parseFloat(price));
+          const profit = calculateProfit(totalCost, Number(item.volume));
+          const percentage = calculatePercentage(profit, Number(item.volume));
+          const averagePrice = calculateAveragePrice(Number(item.volume), Number(item.amount));
 
-        // Обновление цен для каждой монеты
-        const updates = await Promise.all(initialData.map(async (item: any) => {
-          try {
-            const priceResponse = await axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${item.coin}USDT`);
-            const price = priceResponse.data.price;
-            return { ...item, currentPrice: price ? parseFloat(price).toFixed(2) : "Ошибка" };
-          } catch (error) {
-            console.error(`Ошибка при получении цены для ${item.coin}:`, error);
-            return { ...item, currentPrice: "Ошибка" }; // Возвращаем элемент с ошибкой цены, если запрос не удался
-          }
-        }));
+          return {
+            ...item,
+            currentPrice: price,
+            price: totalCost.toString(),
+            profit: `${profit.toFixed(2)} $`,
+            percentage: percentage.toFixed(2),
+            averagePrice: averagePrice
+          };
+        } catch (error) {
+          console.error(`Ошибка при получении цены для ${item.coin}:`, error);
+          return { ...item, currentPrice: "Ошибка" };
+        }
+      }));
 
-        // Обновляем dataSource с новыми данными, включая обновленные цены
-        setDataSource(updates);
-      } catch (error) {
-        console.error("Ошибка при получении начальных данных:", error);
-      }
+      setDataSource(updatedData);
     };
 
-    fetchInitialDataAndUpdatePrices();
-  }, []);
+    updatePrices();
+  }, [data]);
+
+  // useEffect(() => {
+  //   setDataSource(data);
+  // }, [data]);
+
+  // useEffect(() => {
+  //   const fetchInitialDataAndUpdatePrices = async () => {
+  //     try {
+  //       // Загрузка начальных данных
+  //       const response = await axios.get(`${process.env.REACT_APP_API_URL}/coins`);
+  //       const initialData = response.data;
+  //
+  //       // Обновление цен для каждой монеты
+  //       const updates = await Promise.all(initialData.map(async (item: any) => {
+  //         try {
+  //           const priceResponse = await axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${item.coin}USDT`);
+  //           const price = priceResponse.data.price;
+  //           return { ...item, currentPrice: price ? parseFloat(price).toFixed(2) : "Ошибка" };
+  //         } catch (error) {
+  //           console.error(`Ошибка при получении цены для ${item.coin}:`, error);
+  //           return { ...item, currentPrice: "Ошибка" }; // Возвращаем элемент с ошибкой цены, если запрос не удался
+  //         }
+  //       }));
+  //
+  //       setDataSource(updates);
+  //     } catch (error) {
+  //       console.error("Ошибка при получении начальных данных:", error);
+  //     }
+  //   };
+  //
+  //   fetchInitialDataAndUpdatePrices();
+  // }, []);
 
   const fetchPriceForCoin = async (coinSymbol: string) => {
     try {
@@ -58,18 +98,47 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
     }
   };
 
-  const updateAllPrices = async () => {
-    const updates = await Promise.all(
-      dataSource.map(async (item) => {
-        const price = await fetchPriceForCoin(item.coin);
-        return { ...item, currentPrice: price ? parseFloat(price).toFixed(2) : "Ошибка" };
-      })
-    );
+  // const updateAllPrices = async () => {
+  //   const updates = await Promise.all(
+  //     dataSource.map(async (item) => {
+  //       const price = await fetchPriceForCoin(item.coin);
+  //       return { ...item, currentPrice: price ? parseFloat(price).toFixed(2) : "Ошибка" };
+  //     })
+  //   );
+  //
+  //   console.log(updates);
+  //   setDataSource(updates);
+  //
+  // };
 
-    console.log(updates)
-    setDataSource(updates);
-
-  };
+  // const updateAllPrices = async () => {
+  //   const updates = await Promise.all(
+  //     dataSource.map(async (item) => {
+  //       const price = await fetchPriceForCoin(item.coin);
+  //       if (!price) {
+  //         return { ...item, currentPrice: "Ошибка" };
+  //       }
+  //       const currentPrice = parseFloat(price).toFixed(2);
+  //
+  //       const priceValue = calculateTotalCost(Number(item.amount), parseFloat(currentPrice));
+  //       const profit = calculateProfit(priceValue, Number(item.volume));
+  //       const percentage = calculatePercentage(profit, Number(item.volume));
+  //       const averagePrice = calculateAveragePrice(Number(item.volume), Number(item.amount));
+  //
+  //       return {
+  //         ...item,
+  //         currentPrice,
+  //         price: priceValue.toString(),
+  //         profit: `${profit.toFixed(2)} $`,
+  //         percentage: percentage.toFixed(2),
+  //         averagePrice
+  //       };
+  //     })
+  //   );
+  //
+  //   console.log(updates);
+  //   setDataSource(updates);
+  // };
 
   const isEditing = (record: CryptoData) => record.key === editingKey;
 
@@ -132,7 +201,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
       title: "Цена текущая",
       dataIndex: "currentPrice",
       key: "currentPrice",
-      editable: true,
+      editable: true
     },
     {
       title: "Количество",
@@ -242,9 +311,9 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
 
       <h2>Список моих монет:</h2>
       <br />
-      <Button onClick={updateAllPrices} style={{ marginBottom: 16 }}>
-        Обновить цены
-      </Button>
+      {/*<Button onClick={updateAllPrices} style={{ marginBottom: 16 }}>*/}
+      {/*  Обновить цены*/}
+      {/*</Button>*/}
       <Form form={form} component={false}>
         <Table
           components={{
@@ -257,7 +326,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
           //   ...record,
           //   key: record.id
           // }))}
-          dataSource={dataSource.map((record) => ({...record, key: record.id}))}
+          dataSource={dataSource.map((record) => ({ ...record, key: record.id }))}
           columns={mergedColumns}
           rowClassName="editable-row"
           pagination={false}
