@@ -20,8 +20,8 @@ export class Coin {
   @Column('float')
   amount: number;
 
-  // @Column('float', { nullable: true })
-  // price?: number;
+  @Column('float', { nullable: true })
+  price?: number;
 
   // @Column('float', { nullable: true })
   // profit?: number;
