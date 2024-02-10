@@ -2,23 +2,14 @@ import React from 'react';
 import styles from './ProfitTable.module.css'
 import {motion} from 'framer-motion';
 
-interface ProfitTableProps {
-    cryptoData: Array<{
-        volume: string;
-        price?: string;
-    }>;
-}
+const ProfitTable = () => {
 
-const ProfitTable: React.FC<ProfitTableProps> = ({cryptoData}) => {
-    const calculateTotal = (data: ProfitTableProps['cryptoData'], key: 'volume' | 'price') => {
-        return data.reduce((acc, item) => acc + Number(item[key] || 0), 0);
+    const data = {
+        starterPortfolioPrice: '1000 $',
+        portfolioPrice: '1500 $',
+        portfolioProfit: '500 $',
+        totalPercentage: '67 %',
     };
-
-    const totalVolume = calculateTotal(cryptoData, 'volume');
-    const totalPortfolioPrice = calculateTotal(cryptoData, 'price');
-    const profit = totalPortfolioPrice - totalVolume;
-    const totalPercentage = totalVolume === 0 ? '0 %' : `${((profit * 100) / totalVolume).toFixed(2)} %`;
-
     return (
         <motion.div
             initial={{opacity: 0}}
@@ -30,24 +21,19 @@ const ProfitTable: React.FC<ProfitTableProps> = ({cryptoData}) => {
                 <div className={styles.bgColor}>
                     <div className={styles.row}>
                         <div className={styles.cell}><span>Цена портфеля начальная</span></div>
-                        <div className={styles.cell}><b>{totalVolume.toFixed(2)} $</b></div>
+                        <div className={styles.cell}><b>{data.starterPortfolioPrice}</b></div>
                     </div>
                     <div className={styles.row}>
                         <div className={styles.cell}><span>Цена портфеля</span></div>
-                        <div className={styles.cell}><b>{totalPortfolioPrice.toFixed(0)} $</b></div>
+                        <div className={styles.cell}><b>{data.portfolioPrice}</b></div>
                     </div>
                     <div className={styles.row}>
                         <div className={styles.cell}><span>Прибыль по портфелю</span></div>
-                        <div className={styles.cell}><b style={{color: profit < 0 ? 'red' : '#0dff00'}}>
-                            {profit.toFixed(2)} $
-                        </b></div>
+                        <div className={styles.cell}><b>{data.portfolioProfit}</b></div>
                     </div>
                     <div className={styles.row}>
                         <div className={styles.cell}><span>Общий % по портфелю</span></div>
-                        <div className={styles.cell}><b
-                            style={{color: parseFloat(totalPercentage) < 0 ? 'red' : '#0dff00'}}>
-                            {totalPercentage}
-                        </b></div>
+                        <div className={styles.cell}><b>{data.totalPercentage}</b></div>
                     </div>
                 </div>
             </div>}

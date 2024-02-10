@@ -1,8 +1,0 @@
-.bgButton {
-    background: orange;
-}
-
-.bgButton:hover {
-    background: #b27600 !important;
-    box-shadow: none;
-}

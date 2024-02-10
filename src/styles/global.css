@@ -21,8 +21,3 @@ h2 {
     color: white;
     font-weight: lighter;
 }
-
-.ant-table-cell,
-.ant-table-cell > th{
-    text-align: center !important;
-}
