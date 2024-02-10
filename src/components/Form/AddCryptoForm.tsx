@@ -85,12 +85,14 @@ const AddCryptoForm = ({ onAdd, isVisible, onCancel }: AddCryptoFormProps) => {
       averagePrice: calculateAveragePrice(Number(values.volume), Number(values.amount)),
       price: Number(values.amount) * (currentPrice || 0),
       profit,
-      percentage: Number(percentage).toFixed(2)
+      percentage: Number(percentage).toFixed(2),
     };
 
     try {
-      await axios.post(`${process.env.REACT_APP_API_URL}/coins`, newData);
-      onAdd(newData);
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/coins`, newData);
+      const addedCoin = response.data;
+
+      onAdd(addedCoin);
     } catch (error) {
       console.error(`Ошибка при добавлении монеты: ${error}`);
     }

@@ -166,7 +166,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
     {
       key: "action",
       render: (_: any, record: CryptoData) => (
-        <DeleteButton keyToDelete={record.id ?? 0} onDeleteConfirm={onDeleteConfirm} />
+        <DeleteButton keyToDelete={record.id} onDeleteConfirm={onDeleteConfirm} />
       )
     },
     {

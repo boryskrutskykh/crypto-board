@@ -52,17 +52,24 @@ function App() {
     setIsModalVisible(false);
   };
 
+
   const onDelete = async (coinId: number) => {
-    const updatedData = data.filter(item => item.id !== coinId);
-    setData(updatedData);
-    await axios.delete(`${process.env.REACT_APP_API_URL}/coins/${coinId}`);
+    try {
+      // Отправляем запрос на удаление монеты по ID
+      await axios.delete(`${process.env.REACT_APP_API_URL}/coins/${coinId}`);
+      // Обновляем состояние, удаляя монету с указанным ID
+      setData(currentData => currentData.filter(item => item.id !== coinId));
+    } catch (error) {
+      console.error(`Ошибка при удалении монеты с ID ${coinId}:`, error);
+    }
   };
 
-  const onDeleteConfirm = async (coinId: number) => {
+
+  const onDeleteConfirm = (coinId: number) => {
     Modal.confirm({
       title: "Вы уверены, что хотите удалить эту монету?",
-      onOk() {
-        onDelete(coinId);
+      onOk: async () => {
+        await onDelete(coinId);
       }
     });
   };
