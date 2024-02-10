@@ -15,12 +15,45 @@ function App() {
   const [data, setData] = useState<CryptoData[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+
   // TODO move this piece of code to hooks.
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(`${process.env.REACT_APP_API_URL}/coins`);
+  //
+  //       const updatedData = response.data.map((item: any) => ({
+  //         ...item,
+  //       }));
+  //       setData(updatedData)
+  //     } catch (error) {
+  //       console.error("Ошибка при получении данных:", error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/coins`);
-        setData(response.data);
+
+        const updatedData = response.data.map((item: any) => {
+          // Преобразование строковых значений в числа для вычислений
+          const amount = parseFloat(item.amount);
+          // Предположим, что currentPrice уже есть в объекте, иначе его нужно определить
+          const currentPrice = parseFloat(item.currentPrice || "321"); // Замените "0" на логику получения реальной цены, если currentPrice отсутствует
+
+          // Вычисление price
+          const price = (amount * currentPrice).toFixed(2); // Форматирование результата до двух знаков после запятой
+
+          return {
+            ...item,
+            price, // Добавление вычисленного значения price в объект
+          };
+        });
+
+        setData(updatedData);
       } catch (error) {
         console.error("Ошибка при получении данных:", error);
       }
@@ -28,13 +61,14 @@ function App() {
     fetchData();
   }, []);
 
-
   const addCryptoData = (newData: Omit<CryptoData, "key">) => {
     const updatedData = {
       ...newData,
       key: Date.now()
     };
-    setData([...data, updatedData]);
+    setData(prevData => [...prevData, updatedData]);
+
+    // setData([...data, updatedData]);
     setIsModalVisible(false);
   };
 
