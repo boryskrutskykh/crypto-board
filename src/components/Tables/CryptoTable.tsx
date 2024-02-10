@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Table, Form } from "antd";
+import { Table, Form, Button, Modal } from "antd";
 import styles from "./CryptoTable.module.css";
 import { CryptoData } from "../../types";
 import DeleteButton from "../Button/DeleteButton";
 import EditableCell from "../../components/Tables/EditableCell";
 import { EditOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { fetchCurrentPrice } from "../../api/fetchPrice";
+import axios from "axios";
+import {
+  calculateAveragePrice,
+  calculateTotalCost,
+  calculateProfit,
+  calculatePercentage
+} from "../../utils/calculation";
 
 interface CryptoTableProps {
   data: CryptoData[];
@@ -16,6 +23,38 @@ interface CryptoTableProps {
 const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave }) => {
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState<number | null>(null);
+  const [dataSource, setDataSource] = useState<CryptoData[]>(data);
+
+  useEffect(() => {
+    const updatePrices = async () => {
+      const updatedData = await Promise.all(data.map(async (item) => {
+        try {
+          const response = await axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${item.coin}USDT`);
+          const price = parseFloat(response.data.price).toFixed(2);
+          const totalCost = calculateTotalCost(Number(item.amount), parseFloat(price));
+          const profit = calculateProfit(totalCost, Number(item.volume));
+          const percentage = calculatePercentage(profit, Number(item.volume));
+          const averagePrice = calculateAveragePrice(Number(item.volume), Number(item.amount));
+
+          return {
+            ...item,
+            currentPrice: price,
+            price: totalCost.toString(),
+            profit: `${profit.toFixed(2)} $`,
+            percentage: percentage.toFixed(2),
+            averagePrice: averagePrice
+          };
+        } catch (error) {
+          console.error(`Ошибка при получении цены для ${item.coin}:`, error);
+          return { ...item, currentPrice: "Ошибка" };
+        }
+      }));
+
+      setDataSource(updatedData);
+    };
+
+    updatePrices();
+  }, [data]);
 
   const isEditing = (record: CryptoData) => record.key === editingKey;
 
@@ -53,7 +92,6 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
       console.error("Ошибка валидации:", errInfo);
     }
   };
-
 
   const columns = [
     {
@@ -128,7 +166,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
     {
       key: "action",
       render: (_: any, record: CryptoData) => (
-        <DeleteButton keyToDelete={record.key ?? 0} onDeleteConfirm={onDeleteConfirm} />
+        <DeleteButton keyToDelete={record.id ?? 0} onDeleteConfirm={onDeleteConfirm} />
       )
     },
     {
@@ -196,10 +234,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
             }
           }}
           bordered
-          dataSource={data.map((record) => ({
-            ...record,
-            key: record.id
-          }))}
+          dataSource={dataSource.map((record) => ({ ...record, key: record.id }))}
           columns={mergedColumns}
           rowClassName="editable-row"
           pagination={false}

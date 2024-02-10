@@ -89,8 +89,8 @@ const AddCryptoForm = ({ onAdd, isVisible, onCancel }: AddCryptoFormProps) => {
     };
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/coins`, newData);
-      onAdd(response.data);
+      await axios.post(`${process.env.REACT_APP_API_URL}/coins`, newData);
+      onAdd(newData);
     } catch (error) {
       console.error(`Ошибка при добавлении монеты: ${error}`);
     }

@@ -15,12 +15,26 @@ function App() {
   const [data, setData] = useState<CryptoData[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  // TODO move this piece of code to hooks.
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/coins`);
-        setData(response.data);
+
+        const pricePromises = response.data.map((item: any) =>
+          axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${item.coin}USDT`)
+            .then(priceResponse => ({
+              ...item,
+              price: priceResponse.data.price
+            }))
+            .catch(error => {
+              console.error(`Ошибка при получении цены для монеты ${item.coin}:`, error);
+              return { ...item, price: "Ошибка" };
+            })
+        );
+
+        const updatedData = await Promise.all(pricePromises);
+        console.log(updatedData);
+        setData(updatedData);
       } catch (error) {
         console.error("Ошибка при получении данных:", error);
       }
@@ -38,17 +52,19 @@ function App() {
     setIsModalVisible(false);
   };
 
-  const onDeleteConfirm = (key: number) => {
+  const onDelete = async (coinId: number) => {
+    const updatedData = data.filter(item => item.id !== coinId);
+    setData(updatedData);
+    await axios.delete(`${process.env.REACT_APP_API_URL}/coins/${coinId}`);
+  };
+
+  const onDeleteConfirm = async (coinId: number) => {
     Modal.confirm({
       title: "Вы уверены, что хотите удалить эту монету?",
       onOk() {
-        onDelete(key);
+        onDelete(coinId);
       }
     });
-  };
-
-  const onDelete = (key: number) => {
-    setData(currentData => currentData.filter(item => item.key !== key));
   };
 
   const saveChanges = (updatedRecord: CryptoData) => {

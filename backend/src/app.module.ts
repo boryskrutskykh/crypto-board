@@ -23,7 +23,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
     CoinModule,
   ],
-  controllers: [AppController],
+  // controllers: [AppController],
+  controllers: [],
   providers: [AppService],
 })
 export class AppModule {}
