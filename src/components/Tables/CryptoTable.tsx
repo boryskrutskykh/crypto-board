@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Form, Button } from "antd";
+import { Table, Form, Button, Modal } from "antd";
 import styles from "./CryptoTable.module.css";
 import { CryptoData } from "../../types";
 import DeleteButton from "../Button/DeleteButton";
@@ -56,17 +56,6 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
     updatePrices();
   }, [data]);
 
-  const fetchPriceForCoin = async (coinSymbol: string) => {
-    try {
-      const response = await axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${coinSymbol}USDT`);
-      return response.data.price;
-    } catch (error) {
-      console.error(`Ошибка при получении цены для ${coinSymbol}:`, error);
-      return null;
-    }
-  };
-
-
   const isEditing = (record: CryptoData) => record.key === editingKey;
 
   const edit = (record: CryptoData) => {
@@ -103,7 +92,6 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
       console.error("Ошибка валидации:", errInfo);
     }
   };
-
 
   const columns = [
     {
@@ -178,7 +166,7 @@ const CryptoTable: React.FC<CryptoTableProps> = ({ data, onDeleteConfirm, onSave
     {
       key: "action",
       render: (_: any, record: CryptoData) => (
-        <DeleteButton keyToDelete={record.key ?? 0} onDeleteConfirm={onDeleteConfirm} />
+        <DeleteButton keyToDelete={record.id ?? 0} onDeleteConfirm={onDeleteConfirm} />
       )
     },
     {

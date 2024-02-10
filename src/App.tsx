@@ -48,23 +48,23 @@ function App() {
       ...newData,
       key: Date.now()
     };
-    setData(prevData => [...prevData, updatedData]);
-
-    // setData([...data, updatedData]);
+    setData([...data, updatedData]);
     setIsModalVisible(false);
   };
 
-  const onDeleteConfirm = (key: number) => {
+  const onDelete = async (coinId: number) => {
+    const updatedData = data.filter(item => item.id !== coinId);
+    setData(updatedData);
+    await axios.delete(`${process.env.REACT_APP_API_URL}/coins/${coinId}`);
+  };
+
+  const onDeleteConfirm = async (coinId: number) => {
     Modal.confirm({
       title: "Вы уверены, что хотите удалить эту монету?",
       onOk() {
-        onDelete(key);
+        onDelete(coinId);
       }
     });
-  };
-
-  const onDelete = (key: number) => {
-    setData(currentData => currentData.filter(item => item.key !== key));
   };
 
   const saveChanges = (updatedRecord: CryptoData) => {
